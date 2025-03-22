@@ -23,19 +23,19 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       select: {
         id: true,
         email: true,
-        firstName: true,
-        lastName: true,
+        first_name: true,
+        last_name: true,
       },
     });
     if (!user) {
       throw new UnauthorizedException('User not found!');
     }
-    const { email, id, firstName, lastName } = user;
+    const { email, id, first_name, last_name } = user;
     return {
       email,
       sub: id,
-      firstName,
-      lastName,
+      first_name,
+      last_name,
     };
   }
 }

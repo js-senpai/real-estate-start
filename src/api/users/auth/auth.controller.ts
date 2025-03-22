@@ -2,13 +2,13 @@ import {
   Body,
   Controller,
   Get,
+  Logger,
   Post,
   Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Logger } from 'winston';
 import { AuthDto } from './auth.dto';
 import { IAuth } from '@common/interfaces/auth.interfaces';
 import { GoogleAuthResult, UseGoogleAuth } from '@nestjs-hybrid-auth/google';
@@ -17,6 +17,7 @@ import { Request, Response } from 'express';
 import { JwtGuard } from '@common/guards/jwt.guard';
 import { RefreshJwtAuthGuard } from '@common/guards/refresh-jwt.guard';
 import dayjs from 'dayjs';
+import { users } from '@prisma/client';
 
 @Controller({
   version: '0',
@@ -45,8 +46,8 @@ export class AuthController {
       const result: GoogleAuthResult = req.hybridAuthResult;
       const { accessToken, refreshToken } = await this.authService.loginGoogle({
         email: result?.profile?.emails[0].value,
-        firstName: result?.profile?.name?.givenName,
-        lastName: result?.profile?.name?.familyName,
+        first_name: result?.profile?.name?.givenName,
+        last_name: result?.profile?.name?.familyName,
       });
       res.cookie('accessToken', accessToken, {
         domain: this.configService

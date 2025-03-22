@@ -7,6 +7,8 @@ import { jwtFactory } from 'src/common/configs/jwt.config';
 import { GoogleAuthModule } from '@nestjs-hybrid-auth/google';
 import { googleAuthConfig } from 'src/common/configs/google-auth.config';
 import { PrismaService } from '../../../common/services/prisma.service';
+import { JwtStrategy } from '@common/strategies/jwt.strategy';
+import { JwtRefreshTokenStrategy } from '@common/strategies/refresh-jwt.strategy';
 
 @Module({
   imports: [
@@ -15,6 +17,12 @@ import { PrismaService } from '../../../common/services/prisma.service';
     GoogleAuthModule.forRootAsync(googleAuthConfig),
   ],
   controllers: [AuthController],
-  providers: [Logger, PrismaService, AuthService],
+  providers: [
+    Logger,
+    PrismaService,
+    AuthService,
+    JwtStrategy,
+    JwtRefreshTokenStrategy,
+  ],
 })
 export class AuthModule {}

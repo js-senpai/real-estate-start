@@ -12,6 +12,7 @@ import { IAuth, IRefreshTokenAuth } from '@common/interfaces/auth.interfaces';
 import { IResponseOk } from '@common/interfaces/common.interface';
 import { JwtService } from '@nestjs/jwt';
 import dayjs from 'dayjs';
+import { users } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -44,9 +45,9 @@ export class AuthService {
 
   async loginGoogle({
     email,
-    firstName,
-    lastName,
-  }: Pick<users, 'email' | 'firstName' | 'lastName'>): Promise<IAuth> {
+    first_name,
+    last_name,
+  }: Pick<users, 'email' | 'first_name' | 'last_name'>): Promise<IAuth> {
     const user = await this.prismaService.users.findUnique({
       where: {
         email,
@@ -57,18 +58,18 @@ export class AuthService {
       },
     });
     if (!user) {
-      const newUser = await this.prismaService.user.create({
+      const newUser = await this.prismaService.users.create({
         data: {
           email,
-          firstName,
-          lastName,
+          first_name,
+          last_name,
         },
         select: {
           id: true,
           email: true,
-          firstName: true,
-          lastName: true,
-          countryId: true,
+          first_name: true,
+          last_name: true,
+          country_id: true,
         },
       });
       return await this.generateTokens(newUser);
@@ -102,7 +103,7 @@ export class AuthService {
         id: userId,
       },
       data: {
-        refreshToken: '',
+        refresh_token: '',
       },
     });
     return {
@@ -119,14 +120,14 @@ export class AuthService {
         id: true,
         email: true,
         password: true,
-        refreshToken: true,
+        refresh_token: true,
       },
     });
-    if (!user || !user.refreshToken) {
+    if (!user || !user.refresh_token) {
       throw new ForbiddenException('Access Denied');
     }
     const refreshTokenMatches = await argon2.verify(
-      user.refreshToken,
+      user.refresh_token,
       refreshToken,
     );
     if (!refreshTokenMatches) throw new ForbiddenException('Access Denied');
@@ -145,7 +146,7 @@ export class AuthService {
         id,
       },
       data: {
-        refreshToken: hashedRefreshToken,
+        refresh_token: hashedRefreshToken,
       },
     });
   }

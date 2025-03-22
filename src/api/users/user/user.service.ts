@@ -14,37 +14,37 @@ export class UserService {
   async registerUser({
     email,
     password,
-    countryId,
-    firstName,
-    lastName,
+    country_id,
+    first_name,
+    last_name,
   }: RegiserUserDto) {
-    const checkUser = await this.prismaService.user.findUnique({
+    const checkUser = await this.prismaService.users.findUnique({
       where: { email },
     });
     if (checkUser) {
       throw new ForbiddenException('User already exists');
     }
-    const checkCountry = await this.prismaService.country.findUnique({
-      where: { id: countryId },
+    const checkCountry = await this.prismaService.countries.findUnique({
+      where: { id: country_id },
     });
     if (!checkCountry) {
       throw new NotFoundException('Country not found');
     }
     const hashedPassword = await argon2.hash(password);
-    return await this.prismaService.user.create({
+    return await this.prismaService.users.create({
       data: {
         email,
         password: hashedPassword,
-        countryId,
-        firstName,
-        lastName,
+        country_id,
+        first_name,
+        last_name,
       },
       select: {
         id: true,
         email: true,
-        firstName: true,
-        lastName: true,
-        countryId: true,
+        first_name: true,
+        last_name: true,
+        country_id: true,
       },
     });
   }

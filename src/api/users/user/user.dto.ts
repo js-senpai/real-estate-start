@@ -27,16 +27,16 @@ export class RegiserUserDto {
   @MaxLength(100)
   @Trim()
   @Escape()
-  firstName: string;
+  first_name: string;
 
   @IsNotEmpty()
   @MinLength(1)
   @MaxLength(100)
   @Trim()
   @Escape()
-  lastName: string;
+  last_name: string;
 
   @IsNotEmpty()
   @IsUUID()
-  countryId: string;
+  country_id: string;
 }

@@ -17,8 +17,8 @@ model languages {
   id            String          @id @default(uuid())
   name          String          @unique
   code          String          @unique  
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
 
   @@index([name, code])
 }
@@ -28,8 +28,8 @@ model countries {
   code          String          @unique  
   users         users[]
   translations countriesTranslations[]
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
 
   @@index([code])
 }
@@ -39,8 +39,8 @@ model countriesTranslations {
   name          String          
   country       countries?     @relation(fields: [country_id], references: [id], onDelete: Cascade)
   country_id    String
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
 
   @@index([name])
 }
@@ -49,14 +49,14 @@ model countriesTranslations {
 model users {
   id            String          @id @default(uuid())
   email         String          @unique
-  firstName     String
-  lastName      String
+  first_name     String
+  last_name      String
   password      String?
-  refreshToken  String?
+  refresh_token  String?
   country       countries?      @relation(fields: [country_id], references: [id], onDelete: Cascade)
   country_id    String?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
 
   @@index([email])
 }
