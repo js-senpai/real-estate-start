@@ -1,0 +1,36 @@
+services:
+  real-estate-start-db:
+    image: postgres:alpine
+    restart: always
+    networks:
+      - real-estate-start-network
+    env_file:
+      - .env
+    ports:
+      - '${POSTGRES_EXTERNAL_PORT}:5432'
+    volumes:
+      - ./db:/var/lib/postgresql/data
+
+  real-estate-start-backend:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      args:
+        - DATABASE_URL=${DATABASE_URL}
+    networks:
+      - real-estate-start-network
+    env_file:
+      - .env
+    restart: always
+    ports:
+      - '${BOT_EXTERNAL_PORT}:3005'
+      - '${SOCKET_EXTERNAL_PORT}:4000'
+    volumes:
+      - ./logs:/app/logs
+      - ./public:/app/public
+    depends_on:
+      - real-estate-start-db
+
+networks:
+  real-estate-start-network:
+    driver: bridge
