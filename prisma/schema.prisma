@@ -14,50 +14,116 @@ datasource db {
 }
 
 model languages {
-  id            String          @id @default(uuid())
-  name          String          @unique
-  code          String          @unique  
-  created_at     DateTime        @default(now())
-  updated_at     DateTime        @updatedAt
+  id                    String                  @id @default(uuid())
+  name                  String                  @unique
+  code                  String                  @unique
+  created_at            DateTime                @default(now())
+  updated_at            DateTime                @updatedAt
+  countriesTranslations countriesTranslations[]
+  citiesTranslations    citiesTranslations[]
+  users                 users[]
+  servicesTranslations  servicesTranslations[]
 
   @@index([name, code])
 }
 
 model countries {
-  id            String          @id @default(uuid())
-  code          String          @unique  
-  users         users[]
+  id           String                  @id @default(uuid())
+  code         String                  @unique
   translations countriesTranslations[]
-  created_at     DateTime        @default(now())
-  updated_at     DateTime        @updatedAt
+  created_at   DateTime                @default(now())
+  updated_at   DateTime                @updatedAt
 
   @@index([code])
 }
 
 model countriesTranslations {
-  id            String          @id @default(uuid())
-  name          String          
-  country       countries?     @relation(fields: [country_id], references: [id], onDelete: Cascade)
-  country_id    String
-  created_at     DateTime        @default(now())
-  updated_at     DateTime        @updatedAt
+  id          String    @id @default(uuid())
+  name        String
+  language    languages @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  language_id String
+  country     countries @relation(fields: [country_id], references: [id], onDelete: Cascade)
+  country_id  String
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
 
   @@index([name])
 }
 
-
-model users {
-  id            String          @id @default(uuid())
-  email         String          @unique
-  first_name     String
-  last_name      String
-  password      String?
-  refresh_token  String?
-  country       countries?      @relation(fields: [country_id], references: [id], onDelete: Cascade)
-  country_id    String?
-  created_at     DateTime        @default(now())
-  updated_at     DateTime        @updatedAt
-
-  @@index([email])
+model cities {
+  id                   String                 @id @default(uuid())
+  users                users[]
+  translations         citiesTranslations[]
+  created_at           DateTime               @default(now())
+  updated_at           DateTime               @updatedAt
+  servicesTranslations servicesTranslations[]
 }
 
+model citiesTranslations {
+  id          String    @id @default(uuid())
+  name        String
+  language    languages @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  language_id String
+  city        cities    @relation(fields: [city_id], references: [id], onDelete: Cascade)
+  city_id     String
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  @@index([name])
+}
+
+model services {
+  id           String                 @id @default(uuid())
+  users        users[]
+  translations servicesTranslations[]
+  created_at   DateTime               @default(now())
+  updated_at   DateTime               @updatedAt
+}
+
+model servicesTranslations {
+  id          String    @id @default(uuid())
+  name        String
+  language    languages @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  language_id String
+  service     cities    @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  service_id  String
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  services    services? @relation(fields: [servicesId], references: [id])
+  servicesId  String?
+
+  @@index([name])
+}
+
+model users {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  first_name    String
+  last_name     String
+  password      String?
+  refresh_token String?
+  city          cities?   @relation(fields: [city_id], references: [id], onDelete: Cascade)
+  city_id       String?
+  location      String?
+  bio           String?
+  contactEmail  String?
+  contactPhone  String?
+  website       String?
+  instagram     String?
+  telegram      String?
+  viber         String?
+  whatsapp      String?
+  linkedin      String?
+  tiktok        String?
+  facebook      String?
+  twitter       String?
+  language      languages @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  language_id   String
+  verified      Boolean   @default(false)
+  service       services? @relation(fields: [service_id], references: [id])
+  service_id    String?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  @@index([email, city_id, language_id, service_id])
+}

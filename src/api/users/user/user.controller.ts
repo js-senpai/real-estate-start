@@ -1,7 +1,16 @@
-import { Body, Controller, Logger, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Logger,
+  Post,
+  Req,
+  UseGuards,
+  Get,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { RegiserUserDto } from './user.dto';
+import { RegiserUserDto, UpdateUserProfileDto } from './user.dto';
 import { ConfigService } from '@nestjs/config';
+import { JwtGuard } from '@common/guards/jwt.guard';
 
 @Controller({
   version: '0',
@@ -21,6 +30,39 @@ export class UserController {
     } catch (e) {
       this.logger.error(
         'Error in register method',
+        JSON.stringify(e?.response?.data || e?.response?.data || e.stack),
+        UserController.name,
+      );
+      throw e;
+    }
+  }
+
+  @Post('/profile')
+  @UseGuards(JwtGuard)
+  async updateProfile(@Body() data: UpdateUserProfileDto, @Req() { user }) {
+    try {
+      return await this.userService.updateProfile({
+        ...data,
+        id: user.id,
+      });
+    } catch (e) {
+      this.logger.error(
+        'Error in updateProfile method',
+        JSON.stringify(e?.response?.data || e?.response?.data || e.stack),
+        UserController.name,
+      );
+      throw e;
+    }
+  }
+
+  @Get('/profile')
+  @UseGuards(JwtGuard)
+  async getProfile(@Req() { user }) {
+    try {
+      return await this.userService.get(user.id);
+    } catch (e) {
+      this.logger.error(
+        'Error in getProfile method',
         JSON.stringify(e?.response?.data || e?.response?.data || e.stack),
         UserController.name,
       );

@@ -13,6 +13,7 @@ import { IResponseOk } from '@common/interfaces/common.interface';
 import { JwtService } from '@nestjs/jwt';
 import dayjs from 'dayjs';
 import { users } from '@prisma/client';
+import { DEFAULT_LANGUAGE } from '@common/constants/common.constants';
 
 @Injectable()
 export class AuthService {
@@ -58,18 +59,31 @@ export class AuthService {
       },
     });
     if (!user) {
+      const getDefaultLanguage = await this.prismaService.languages.findUnique({
+        where: {
+          code: DEFAULT_LANGUAGE,
+        },
+        select: {
+          id: true,
+        },
+      });
+      if (!getDefaultLanguage) {
+        throw new NotFoundException('Default language is not found');
+      }
       const newUser = await this.prismaService.users.create({
         data: {
           email,
           first_name,
           last_name,
+          language_id: getDefaultLanguage.id,
         },
         select: {
           id: true,
           email: true,
           first_name: true,
           last_name: true,
-          country_id: true,
+          city_id: true,
+          language_id: true,
         },
       });
       return await this.generateTokens(newUser);
